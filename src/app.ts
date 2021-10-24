@@ -42,7 +42,7 @@ export default class HelloWorld {
 			const modelData = await this.assets.loadGltf(actorData.filename, "box");
 
 			// spawn a copy of the glTF model
-			this.cube = MRE.Actor.CreateFromPrefab(this.context, {
+			let actorModel = MRE.Actor.CreateFromPrefab(this.context, {
 				// using the data we loaded earlier
 				firstPrefabFrom: modelData,
 				// Also apply the following generic actor properties.
@@ -55,6 +55,27 @@ export default class HelloWorld {
 						}
 					}
 				}
+			});
+
+			// Set up cursor interaction. We add the input behavior ButtonBehavior to the cube.
+			// Button behaviors have two pairs of events: hover start/stop, and click start/stop.
+			let buttonBehavior = actorModel.setBehavior(MRE.ButtonBehavior);
+
+			// Trigger the grow/shrink animations on hover.
+			buttonBehavior.onHover('enter', () => {
+				// use the convenience function "AnimateTo" instead of creating the animation data in advance
+				MRE.Animation.AnimateTo(this.context, actorModel, {
+					destination: { transform: { local: { scale: { x: 0.5, y: 0.5, z: 0.5 } } } },
+					duration: 0.3,
+					easing: MRE.AnimationEaseCurves.EaseOutSine
+				});
+			});
+			buttonBehavior.onHover('exit', () => {
+				MRE.Animation.AnimateTo(this.context, actorModel, {
+					destination: { transform: { local: { scale: { x: 0.4, y: 0.4, z: 0.4 } } } },
+					duration: 0.3,
+					easing: MRE.AnimationEaseCurves.EaseOutSine
+				});
 			});
 		}
 
