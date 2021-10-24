@@ -5,12 +5,21 @@
 
 import * as MRE from '@microsoft/mixed-reality-extension-sdk';
 
+interface ActorData {
+	filename:string;
+	position:Array<number>;
+	scale:Array<number>;
+}
+
 /**
  * The main class of this app. All the logic goes here.
  */
 export default class HelloWorld {
 	private text: MRE.Actor = null;
 	private cube: MRE.Actor = null;
+
+	private actorData:ActorData = { filename: "drone.glb", position:[0,0.5,0], scale:[1,1,1]};
+	private actors:Array<MRE.Actor> = []
 	private assets: MRE.AssetContainer;
 
 	constructor(private context: MRE.Context) {
@@ -66,7 +75,7 @@ export default class HelloWorld {
 			{ isPlaying: true, wrapMode: MRE.AnimationWrapMode.PingPong });
 
 		// Load a glTF model before we use it
-		const cubeData = await this.assets.loadGltf('altspace-cube.glb', "box");
+		const cubeData = await this.assets.loadGltf(this.actorData.filename, "box");
 
 		// spawn a copy of the glTF model
 		this.cube = MRE.Actor.CreateFromPrefab(this.context, {
@@ -75,12 +84,10 @@ export default class HelloWorld {
 			// Also apply the following generic actor properties.
 			actor: {
 				name: 'Altspace Cube',
-				// Parent the glTF model to the text actor, so the transform is relative to the text
-				parentId: this.text.id,
 				transform: {
 					local: {
-						position: { x: 0, y: -1, z: 0 },
-						scale: { x: 0.4, y: 0.4, z: 0.4 }
+						position: { x: this.actorData.position[0], y: this.actorData.position[1], z: this.actorData.position[2] },
+						scale: { x: this.actorData.scale[0], y: this.actorData.scale[1], z: this.actorData.scale[2] }
 					}
 				}
 			}
